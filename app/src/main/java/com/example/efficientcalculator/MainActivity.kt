@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity() {
             "=" -> {
                 infixExpression = Expression(input)
                 resultTextBox?.text = infixExpression!!.evaluateExpression().toString()
+                input.clear()
+                input.add(resultTextBox?.text.toString())
             }
 
             "CL" -> {
@@ -40,12 +42,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             "C" -> {
-                resultTextBox?.text = "${resultTextBox?.text}".dropLast(2)
-                input.remove(input.last())
+                resultTextBox?.text = "${resultTextBox?.text}".dropLast(1)
+                if(resultTextBox?.text?.isNotEmpty()!! && resultTextBox?.text?.last() == ' ')
+                    resultTextBox?.text = "${resultTextBox?.text}".dropLast(1)
+
+                if(input.last().length == 1){
+                    input.removeAt(input.lastIndex)
+                }
+                else
+                    input[input.lastIndex] = input.last().dropLast(1)
             }
 
             else -> {
-                if (Character.isDigit(buttonText[0])) {
+                if (Character.isDigit(buttonText[0]) || buttonText[0] == '.') {
                     if (input.isNotEmpty() && Character.isDigit(input.last()[0])) {
                         input[input.lastIndex] = input.last() + buttonText
                         resultTextBox?.text = "${resultTextBox?.text}${button.text}"
