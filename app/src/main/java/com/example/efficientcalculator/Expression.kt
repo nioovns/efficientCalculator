@@ -4,8 +4,9 @@ import androidx.collection.intIntMapOf
 import java.util.Stack
 
 class Expression(var infixExpression: MutableList<String>) {
+    private var postfix: String = ""
 
-    private fun infixToPostfix(): String {
+    private fun infixToPostfix() {
         var result = ""
         val stack = Stack<String>()
         for (element in infixExpression) {
@@ -24,24 +25,26 @@ class Expression(var infixExpression: MutableList<String>) {
                 while (stack.isNotEmpty() && precedence(stack.peek()) >= precedence(element)) {
                     result += "${stack.pop()} "
                 }
+                stack.push(element)
             }
 
         }
         while (stack.isNotEmpty()) {
             result += "${stack.pop()} "
         }
-        return result
+        postfix = result
     }
 
     private fun precedence(op: String): Int {
         return when (op) {
-            "*", "/" -> 2
+            "×", "÷" -> 2
             "+", "-" -> 1
             else -> -1
         }
     }
 
-    fun evaluateExpression(postfix: String): Number {
+    fun evaluateExpression(): Number {
+        infixToPostfix()
         val stack = Stack<Double>()
         var i = 0
         while (i < postfix.length) {
@@ -60,10 +63,10 @@ class Expression(var infixExpression: MutableList<String>) {
                 val firstNum = stack.pop()
                 val secondNum = stack.pop()
                 when (postfix[i]) {
-                    '*' -> stack.push(firstNum * secondNum)
-                    '/' -> stack.push(firstNum / secondNum)
+                    '×' -> stack.push(firstNum * secondNum)
+                    '÷' -> stack.push(secondNum / firstNum)
                     '+' -> stack.push(firstNum + secondNum)
-                    '-' -> stack.push(firstNum - secondNum)
+                    '-' -> stack.push(secondNum - firstNum)
                 }
             }
             i++
